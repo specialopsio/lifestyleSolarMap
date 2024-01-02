@@ -178,13 +178,6 @@ gulp.task('commit-scripts', function(){
 // Function to process scripts for staging
 function processScriptsForStaging(fileName, section) {
   let domain = config.stagingLink;
-  let function_names = config.functionNames
-  let function_name_string = ''
-  if(function_names){
-    function_names.forEach((name) => {
-      function_name_string += `window.${name}=${name};`
-    })
-  }
   return gulp.src(`./src/scripts/${section}/*.js`)
     .pipe(sort())
     .pipe(concat('combined.js'))
@@ -198,6 +191,11 @@ gulp.task('commit-prod', commitAndPushSpecificFile('./dist/prod.js'))
 
 gulp.task('commit-staging', commitAndPushSpecificFile('./dist/staging.js'))
 
+gulp.task('commit-dist', commitAndPushSpecificFile('./dist/*'));
+
+// Task to commit 'scripts' directory
+gulp.task('commit-scripts', commitAndPushSpecificFile('./src/scripts/*'));
+
 // Production build task
 gulp.task('build-prod', async function() {
   // Compile SCSS
@@ -208,6 +206,7 @@ gulp.task('build-prod', async function() {
   await processScriptsForProd('prod.js', 'head');
 });
 
+
 gulp.task('combine-embeds', async function () {
   combineImportsAndEmbed('footer')
   combineImportsAndEmbed('head')
@@ -217,16 +216,18 @@ gulp.task('combine-embeds', async function () {
 gulp.task('build-staging', async function() {
   // Compile SCSS for staging
   scssToCss();
-
+  
   // Process scripts for staging
   await processScriptsForStaging('staging.js', 'footer');
   await processScriptsForStaging('staging.js', 'head');
 });
 
+gulp.task('build-prod-commit', gulp.series('build-prod', 'commit-dist', 'commit-scripts'))
+gulp.task('build-staging-commit', gulp.series('build-staging', 'commit-dist', 'commit-scripts'))
 
 gulp.task('commit-all', gulp.parallel('commit-dist', 'commit-scripts'))
 
 gulp.task('build-commit-all', gulp.series(gulp.parallel('build-prod', 'build-staging'), 'commit-all', 'combine-embeds'))
 
 // Default task
-gulp.task('default', gulp.parallel('build-prod', 'build-staging', 'combine-embeds'));
+gulp.task('default', gulp.series('build-prod', 'build-staging', 'combine-embeds', 'commit-dist', 'commit-scripts'));
