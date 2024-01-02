@@ -32,6 +32,7 @@
   "homepage": "https://github.com/BuiltByQuantum/webflowCompiler#readme",
   "dependencies": {
     "browser-sync": "^2.27.7",
+    "dotenv": "^16.3.1",
     "gulp": "^4.0.2",
     "gulp-concat": "^2.6.1",
     "gulp-git": "^2.10.1",
