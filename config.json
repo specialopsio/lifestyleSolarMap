@@ -1,6 +1,6 @@
 {
   "debug": true,
   "minify": true,
-  "productionLink": "production-domain.com",
-  "stagingLink": "staging-domain.com"
+  "productionLink": "lsmap.webflow.io",
+  "stagingLink": "map.lifestylesolar.com"
 }
