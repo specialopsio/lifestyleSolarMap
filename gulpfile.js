@@ -71,7 +71,7 @@ const scssToCss = () => {
 }
 
 async function processScriptsForProd(fileName, section) {
-  let domain = config.productionUrl;
+  let domain = config.productionLink;
   let function_names = config.functionNames
   let function_name_string = ''
   if(function_names){
@@ -177,7 +177,7 @@ gulp.task('commit-scripts', function(){
 
 // Function to process scripts for staging
 function processScriptsForStaging(fileName, section) {
-  let domain = config.stagingUrl;
+  let domain = config.stagingLink;
   let function_names = config.functionNames
   let function_name_string = ''
   if(function_names){
