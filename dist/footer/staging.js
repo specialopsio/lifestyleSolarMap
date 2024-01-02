@@ -61,7 +61,7 @@ if (window.location.href.indexOf("map.lifestylesolar.com") !== -1) {
     // Create link element
     const link = document.createElement("a");
     link.href = "#";
-    link.className = "sidebar4_link is-indent is-selected-button count-total w-inline-block";
+    link.className = `sidebar4_link is-indent count-total w-inline-block ${item.selected ? "is-selected-button" : ""}`;
     link.id = item.id;
 
     // Create div for content
@@ -87,7 +87,7 @@ if (window.location.href.indexOf("map.lifestylesolar.com") !== -1) {
 
     // Badge for count
     const badgeDiv = document.createElement("div");
-    badgeDiv.className = "sidebar4_badge alt-badge is-selected";
+    badgeDiv.className = `sidebar4_badge alt-badge ${item.selected ? "is-selected" : ""}`;
     badgeDiv.innerHTML = `<div class="text-size-small">${item.count}</div>`;
 
     // Append icon/label and badge to content div
@@ -105,7 +105,6 @@ if (window.location.href.indexOf("map.lifestylesolar.com") !== -1) {
       link.addEventListener("click", function(event) {
         eval(func); // Execute function on click
       });
-    });
+    })
   });
-
 };
