@@ -12,6 +12,7 @@ import browserSync from 'browser-sync';
 import fs from 'fs';
 import git from 'gulp-git'
 import dotenv from 'dotenv'
+import { execSync } from 'child_process';
 
 dotenv.config()
 
@@ -33,18 +34,26 @@ function readFileContents(filePath) {
   }
 }
 
+function bumpVersion(type){
+  return function(done){
+    const updateType = type === 'staging' ? 'patch' : 'minor';
+    execSync(`npm version ${updateType} --no-git-tag-version`, { stdio: 'inherit' })
+    done()
+  }
+}
+
 // Function to combine import.txt with embed-*.txt for a given section (footer or head)
 function combineImportsAndEmbed(section) {
 
     const importsPath = `./src/scripts/${section}/imports.txt`
-    const embedPath = `./embed-${section}.txt`
+    const embedElem = `${section}_embed`
     
     const importsContent = readFileContents(importsPath)
-    const embedContent = readFileContents(embedPath)
+    const embedContent = config[embedElem]
 
     const combinedContent = `${importsContent}\n${embedContent}`
 
-    const outputPath = `./dist/${section}/embed-${section}.txt`
+    const outputPath = `./dist/${section}/embed.txt`
     fs.writeFileSync(outputPath, combinedContent)
 
     console.log(`Combined file created at: ${outputPath}`)
@@ -71,7 +80,7 @@ const scssToCss = () => {
 }
 
 async function processScriptsForProd(fileName, section) {
-  let domain = config.productionLink;
+  let domain = config.productionUrl;
   let function_names = config.functionNames
   let function_name_string = ''
   if(function_names){
@@ -177,7 +186,7 @@ gulp.task('commit-scripts', function(){
 
 // Function to process scripts for staging
 function processScriptsForStaging(fileName, section) {
-  let domain = config.stagingLink;
+  let domain = config.stagingUrl;
   return gulp.src(`./src/scripts/${section}/*.js`)
     .pipe(sort())
     .pipe(concat('combined.js'))
@@ -197,14 +206,14 @@ gulp.task('commit-dist', commitAndPushSpecificFile('./dist/*'));
 gulp.task('commit-scripts', commitAndPushSpecificFile('./src/scripts/*'));
 
 // Production build task
-gulp.task('build-prod', async function() {
+gulp.task('build-prod', gulp.series(bumpVersion('production'), async function() {
   // Compile SCSS
   scssToCss();
 
   // Compile scripts for production
   await processScriptsForProd('prod.js', 'footer');
   await processScriptsForProd('prod.js', 'head');
-});
+}));
 
 
 gulp.task('combine-embeds', async function () {
@@ -213,14 +222,14 @@ gulp.task('combine-embeds', async function () {
 })
 
 // Staging build task
-gulp.task('build-staging', async function() {
+gulp.task('build-staging', gulp.series(bumpVersion('staging'), async function() {
   // Compile SCSS for staging
   scssToCss();
   
   // Process scripts for staging
   await processScriptsForStaging('staging.js', 'footer');
   await processScriptsForStaging('staging.js', 'head');
-});
+}));
 
 gulp.task('build-prod-commit', gulp.series('build-prod', 'commit-dist', 'commit-scripts'))
 gulp.task('build-staging-commit', gulp.series('build-staging', 'commit-dist', 'commit-scripts'))
