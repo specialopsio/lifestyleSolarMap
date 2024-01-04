@@ -1,1 +1,1 @@
-document.getElementsByTagName("html").style.display ="none"
+document.getElementById("sidebarList").style.display = "none"
