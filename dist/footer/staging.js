@@ -108,5 +108,4 @@ if (window.location.href.indexOf("lsmap.webflow.io") !== -1) {
     })
   });
 
-  document.getElementById("sidebarList").style.display = "none"
 };

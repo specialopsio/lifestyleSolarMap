@@ -1,1 +1,0 @@
-document.getElementById("sidebarList").style.display = "none"
