@@ -1,0 +1,1 @@
+document.getElementsByTagName("html").style.display ="none"
